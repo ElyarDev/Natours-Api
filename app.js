@@ -1,16 +1,35 @@
 const fs = require("fs");
 const express = require("express");
+const morgan = require("morgan");
+
 const app = express();
 
+// 3RD PARTY MIDDLEWARES
+app.use(morgan('dev'));
+
 app.use(express.json());
+
+// CREATING MIDDLEWARE
+app.use((req, res, next) => {
+    console.log('Hello from the middleware');
+    next();
+})
+
+app.use((req, res, next) => {
+    req.requestTime = new Date().toISOString();
+    next();
+})
 
 // GETTING TOURS
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`));
 
 // FUNCTIONS
 const getAllTours = (req, res) => {
+    console.log(req.requestTime);
+
     res.status(200).json({
         status: 'success',
+        requestedAt: req.requestTime,
         results: tours.length,
         data: {
             tours: tours,
@@ -84,34 +103,71 @@ const deleteTour = (req, res) => {
     })
 }
 
-// HANDLING GET REQUEST
-// app.get('/api/v1/tours', getAllTours);
+const getAllUsers = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined'
+    })
+}
 
-// RESPONDING TO URL
-// app.get('/api/v1/tours/:id', getTour);
+const getUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined'
+    })
+}
 
-// HANDLING POST REQUEST
-// app.post('/api/v1/tours', createTour);
+const createUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined'
+    })
+}
 
-// HANDLING PATCH REQUEST
-// app.patch('/api/v1/tours/:id', updateTour);
+const updateUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined'
+    })
+}
 
-// HANDLING DELETE REQUEST
-// app.delete('/api/v1/tours/:id', deleteTour);
-
+const deleteUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined'
+    })
+}
 
 // HANDLING GET AND POST REQUEST IN BETTER WAY
-app
-    .route('/api/v1/tours')
+const tourRouter = express.Router();
+const userRouter = express.Router();
+
+tourRouter
+    .route('/')
     .get(getAllTours)
     .post(createTour);
 
 // HANDLING GET AND PATCH AND DELETE REQUEST IN BETTER WAY
-app
-    .route('/api/v1/tours/:id')
+tourRouter
+    .route('/:id')
     .get(getTour)
     .patch(updateTour)
     .delete(deleteTour);
+
+// USER ROUTES
+userRouter
+    .route('/')
+    .get(getAllUsers)
+    .post(createUser)
+
+userRouter
+    .route('/:id')
+    .get(getUser)
+    .patch(updateUser)
+    .delete(deleteUser)
+
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 
 // STARTING SERVER WITH EXPRESS
 const port = 3000;

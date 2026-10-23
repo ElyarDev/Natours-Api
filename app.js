@@ -22,16 +22,7 @@ app.use((req, res, next) => {
     next();
 })
 
-
-
-// FUNCTIONS
-
-
-
-
-// HANDLING GET AND POST REQUEST IN BETTER WAY
-
-
+// ROUTES
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
